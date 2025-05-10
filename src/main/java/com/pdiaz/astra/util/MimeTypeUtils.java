@@ -10,6 +10,8 @@ public class MimeTypeUtils {
 
     private static final Map<String, String> mimeTypes = new HashMap<>();
 
+    private MimeTypeUtils () {}
+
     static {
         // Docs
         mimeTypes.put("pdf", "application/pdf");

@@ -80,20 +80,60 @@
 
     <div class="copy-command">
         <p><strong>Comando para unir los archivos (Windows):</strong></p>
-        <p id="copyCommand" th:text="'copy /b ' + ${file.fileName} + '.0.' + ${file.fileType} + ' + ' + ${file.fileName} + '.1.' + ${file.fileType} + ' + ... ' + ${file.fileName} + '.' + ${file.segments.size()-1} + '.' + ${file.fileType} + ' ' + ${file.fileName} + '.' + ${file.fileType}"></p>
-        <button class="btn btn-sm btn-secondary" onclick="copyToClipboard()">Copiar Comando</button>
+        <p id="copyCommand"></p>
+        <button class="btn btn-sm btn-secondary" onclick="copyToClipboard('copyCommand')">Copiar Comando</button>
     </div>
 
+    <div class="copy-command mt-3">
+        <p><strong>Comando para unir los archivos (Unix/Linux):</strong></p>
+        <p id="catCommand"></p>
+        <button class="btn btn-sm btn-secondary" onclick="copyToClipboard('catCommand')">Copiar Comando</button>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.onload = function() {
+            const fileName = /*[[${file.fileName}]]*/ '';
+            const fileType = /*[[${file.fileType}]]*/ '';
+            const segmentsSize = /*[[${file.segments.size()}]]*/ 0;
+
+            // Comando copy para Windows
+            let copyCommand = 'copy /b ';
+            for (let i = 0; i < segmentsSize; i++) {
+                copyCommand += fileName + '.' + i + '.' + fileType;
+                if (i < segmentsSize - 1) {
+                    copyCommand += ' + ';
+                }
+            }
+            copyCommand += ' ' + fileName + '.' + fileType;
+            document.getElementById('copyCommand').innerText = copyCommand;
+
+            // Comando cat para Unix/Linux
+            let catCommand = 'cat ';
+            for (let i = 0; i < segmentsSize; i++) {
+                catCommand += fileName + '.' + i + '.' + fileType + ' ';
+            }
+            catCommand += '>> ' + fileName + '.' + fileType;
+            document.getElementById('catCommand').innerText = catCommand;
+        };
+        /*]]>*/
+    </script>
+
     <div class="mt-4">
-        <p><strong>Nota:</strong> Para unir los archivos en Windows, descarga todos los segmentos en la misma carpeta y ejecuta el comando anterior en la línea de comandos.</p>
+        <p><strong>Instrucciones para unir los archivos:</strong></p>
+        <ul>
+            <li><strong>Windows:</strong> Descarga todos los segmentos en la misma carpeta y ejecuta el comando "copy /b" en la línea de comandos (cmd).</li>
+            <li><strong>Linux/Mac:</strong> Descarga todos los segmentos en la misma carpeta y ejecuta el comando "cat" en la terminal.</li>
+        </ul>
+        <p class="text-warning"><small>Nota: Al usar el comando "cat" con ">>", asegúrate de que el archivo destino no exista previamente o se añadirá contenido al final de un archivo existente.</small></p>
     </div>
 
     <a href="/" class="back-link">Volver al inicio</a>
 </div>
 
 <script>
-    function copyToClipboard() {
-        const copyText = document.getElementById("copyCommand");
+    function copyToClipboard(elementId) {
+        const copyText = document.getElementById(elementId);
         const textArea = document.createElement("textarea");
         textArea.value = copyText.textContent;
         document.body.appendChild(textArea);
